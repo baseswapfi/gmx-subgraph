@@ -5,26 +5,26 @@ schema:
   file: ./schema.graphql
 
 dataSources:
-  - kind: ethereum/contract
-    name: ChainlinkAggregatorBTC
-    network: arbitrum-one
-    source:
-      address: "0x942d00008D658dbB40745BBEc89A93c253f9B882"
-      abi: ChainlinkAggregator
-      startBlock: 225000
-    mapping:
-      kind: ethereum/events
-      apiVersion: 0.0.4
-      language: wasm/assemblyscript
-      entities:
-        - ChainlinkPrice
-      abis:
-        - name: ChainlinkAggregator
-          file: ./abis/ChainlinkAggregator.json
-      eventHandlers:
-        - event: AnswerUpdated(indexed int256,indexed uint256,uint256)
-          handler: handleAnswerUpdatedBTC
-      file: ./src/pricesMapping.ts
+  # - kind: ethereum/contract
+  #   name: ChainlinkAggregatorBTC
+  #   network: arbitrum-one
+  #   source:
+  #     address: "0x942d00008D658dbB40745BBEc89A93c253f9B882"
+  #     abi: ChainlinkAggregator
+  #     startBlock: 225000
+  #   mapping:
+  #     kind: ethereum/events
+  #     apiVersion: 0.0.4
+  #     language: wasm/assemblyscript
+  #     entities:
+  #       - ChainlinkPrice
+  #     abis:
+  #       - name: ChainlinkAggregator
+  #         file: ./abis/ChainlinkAggregator.json
+  #     eventHandlers:
+  #       - event: AnswerUpdated(indexed int256,indexed uint256,uint256)
+  #         handler: handleAnswerUpdatedBTC
+  #     file: ./src/pricesMapping.ts
   - kind: ethereum/contract
     name: ChainlinkAggregatorETH
     network: arbitrum-one
@@ -45,26 +45,26 @@ dataSources:
         - event: AnswerUpdated(indexed int256,indexed uint256,uint256)
           handler: handleAnswerUpdatedETH
       file: ./src/pricesMapping.ts
-  - kind: ethereum/contract
-    name: ChainlinkAggregatorUNI
-    network: arbitrum-one
-    source:
-      address: "0xeFc5061B7a8AeF31F789F1bA5b3b8256674F2B71"
-      abi: ChainlinkAggregator
-      startBlock: 225000
-    mapping:
-      kind: ethereum/events
-      apiVersion: 0.0.4
-      language: wasm/assemblyscript
-      entities:
-        - ChainlinkPrice
-      abis:
-        - name: ChainlinkAggregator
-          file: ./abis/ChainlinkAggregator.json
-      eventHandlers:
-        - event: AnswerUpdated(indexed int256,indexed uint256,uint256)
-          handler: handleAnswerUpdatedUNI
-      file: ./src/pricesMapping.ts
+  # - kind: ethereum/contract
+  #   name: ChainlinkAggregatorUNI
+  #   network: arbitrum-one
+  #   source:
+  #     address: "0xeFc5061B7a8AeF31F789F1bA5b3b8256674F2B71"
+  #     abi: ChainlinkAggregator
+  #     startBlock: 225000
+  #   mapping:
+  #     kind: ethereum/events
+  #     apiVersion: 0.0.4
+  #     language: wasm/assemblyscript
+  #     entities:
+  #       - ChainlinkPrice
+  #     abis:
+  #       - name: ChainlinkAggregator
+  #         file: ./abis/ChainlinkAggregator.json
+  #     eventHandlers:
+  #       - event: AnswerUpdated(indexed int256,indexed uint256,uint256)
+  #         handler: handleAnswerUpdatedUNI
+  #     file: ./src/pricesMapping.ts
   - kind: ethereum/contract
     name: ChainlinkAggregatorLINK
     network: arbitrum-one
@@ -105,26 +105,26 @@ dataSources:
         - event: AnswerUpdated(indexed int256,indexed uint256,uint256)
           handler: handleAnswerUpdatedSPELL
       file: ./src/pricesMapping.ts
-  - kind: ethereum/contract
-    name: ChainlinkAggregatorSUSHI
-    network: arbitrum-one
-    source:
-      address: "0x0d02b6eba98bda364953d9b1def8eedc19ffd516"
-      abi: ChainlinkAggregator
-      startBlock: 226756
-    mapping:
-      kind: ethereum/events
-      apiVersion: 0.0.4
-      language: wasm/assemblyscript
-      entities:
-        - ChainlinkPrice
-      abis:
-        - name: ChainlinkAggregator
-          file: ./abis/ChainlinkAggregator.json
-      eventHandlers:
-        - event: AnswerUpdated(indexed int256,indexed uint256,uint256)
-          handler: handleAnswerUpdatedSUSHI
-      file: ./src/pricesMapping.ts
+  # - kind: ethereum/contract
+  #   name: ChainlinkAggregatorSUSHI
+  #   network: arbitrum-one
+  #   source:
+  #     address: "0x0d02b6eba98bda364953d9b1def8eedc19ffd516"
+  #     abi: ChainlinkAggregator
+  #     startBlock: 226756
+  #   mapping:
+  #     kind: ethereum/events
+  #     apiVersion: 0.0.4
+  #     language: wasm/assemblyscript
+  #     entities:
+  #       - ChainlinkPrice
+  #     abis:
+  #       - name: ChainlinkAggregator
+  #         file: ./abis/ChainlinkAggregator.json
+  #     eventHandlers:
+  #       - event: AnswerUpdated(indexed int256,indexed uint256,uint256)
+  #         handler: handleAnswerUpdatedSUSHI
+  #     file: ./src/pricesMapping.ts
   - kind: ethereum/contract
     name: ChainlinkAggregatorDAI
     network: arbitrum-one
@@ -145,26 +145,26 @@ dataSources:
         - event: AnswerUpdated(indexed int256,indexed uint256,uint256)
           handler: handleAnswerUpdatedDAI
       file: ./src/pricesMapping.ts
-  - kind: ethereum/contract
-    name: ChainlinkAggregatorMIM
-    network: arbitrum-one
-    source:
-      address: "0x0ae17556f9698fc47c365a746ab9cddcb17f3809"
-      abi: ChainlinkAggregator
-      startBlock: 226756
-    mapping:
-      kind: ethereum/events
-      apiVersion: 0.0.4
-      language: wasm/assemblyscript
-      entities:
-        - ChainlinkPrice
-      abis:
-        - name: ChainlinkAggregator
-          file: ./abis/ChainlinkAggregator.json
-      eventHandlers:
-        - event: AnswerUpdated(indexed int256,indexed uint256,uint256)
-          handler: handleAnswerUpdatedMIM
-      file: ./src/pricesMapping.ts
+  # - kind: ethereum/contract
+  #   name: ChainlinkAggregatorMIM
+  #   network: arbitrum-one
+  #   source:
+  #     address: "0x0ae17556f9698fc47c365a746ab9cddcb17f3809"
+  #     abi: ChainlinkAggregator
+  #     startBlock: 226756
+  #   mapping:
+  #     kind: ethereum/events
+  #     apiVersion: 0.0.4
+  #     language: wasm/assemblyscript
+  #     entities:
+  #       - ChainlinkPrice
+  #     abis:
+  #       - name: ChainlinkAggregator
+  #         file: ./abis/ChainlinkAggregator.json
+  #     eventHandlers:
+  #       - event: AnswerUpdated(indexed int256,indexed uint256,uint256)
+  #         handler: handleAnswerUpdatedMIM
+  #     file: ./src/pricesMapping.ts
 
   - kind: ethereum/contract
     name: GlpManager
