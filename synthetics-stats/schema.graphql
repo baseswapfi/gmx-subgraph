@@ -13,9 +13,12 @@ enum TradeActionType {
   OrderUpdated
 }
 
-enum ClaimCollateralActionType {
+enum ClaimActionType {
   ClaimPriceImpact
   ClaimFunding
+  SettleFundingFeeCreated
+  SettleFundingFeeExecuted
+  SettleFundingFeeCancelled
 }
 
 type AffiliateRewardUpdate @entity(immutable: true) {
@@ -90,7 +93,8 @@ type PositionIncrease @entity(immutable: true) {
   longTokenFundingAmountPerSize: BigInt!
   shortTokenFundingAmountPerSize: BigInt!
   priceImpactAmount: BigInt!
-  pnlUsd: BigInt!
+  priceImpactUsd: BigInt!
+  basePnlUsd: BigInt!
   isLong: Boolean!
 
   transaction: Transaction
@@ -114,12 +118,13 @@ type PositionDecrease @entity(immutable: true) {
   collateralDeltaAmount: BigInt!
   executionPrice: BigInt!
   priceImpactDiffUsd: BigInt!
+  priceImpactUsd: BigInt!
   orderType: BigInt!
   borrowingFactor: BigInt!
   longTokenFundingAmountPerSize: BigInt!
   shortTokenFundingAmountPerSize: BigInt!
   priceImpactAmount: BigInt!
-  pnlUsd: BigInt!
+  basePnlUsd: BigInt!
   isLong: Boolean!
 
   transaction: Transaction
@@ -142,7 +147,6 @@ type PositionFeesInfo @entity(immutable: true) {
   positionFeeAmount: BigInt!
   borrowingFeeAmount: BigInt!
   fundingFeeAmount: BigInt!
-  feeAmountForPool: BigInt!
   feeUsdForPool: BigInt!
 
   totalRebateFactor: BigInt!
@@ -181,21 +185,27 @@ type SwapFeesInfo @entity(immutable: true) {
 
   tokenPrice: BigInt!
   feeReceiverAmount: BigInt!
-  feeAmountForPool: BigInt!
   feeUsdForPool: BigInt!
 
   transaction: Transaction!
 }
 
+type PoolValue @entity {
+  # marketAddress
+  id: ID!
+  poolValue: BigInt!
+  pendingFeeUsds: [BigInt!]!
+  pendingCollectedMarketFeesInfoIds: [String!]!
+}
+
 type CollectedMarketFeesInfo @entity {
-  # marketAddress:tokenAddress:period:timestampGroup
+  # marketAddress:period:timestampGroup
   id: ID!
   period: String!
   marketAddress: String!
-  tokenAddress: String!
-  feeAmountForPool: BigInt!
   feeUsdForPool: BigInt!
-  cummulativeFeeAmountForPool: BigInt!
+  feeUsdPerPoolValue: BigInt!
+  cumulativeFeeUsdPerPoolValue: BigInt!
   cummulativeFeeUsdForPool: BigInt!
   timestampGroup: Int!
 }
@@ -220,7 +230,10 @@ type TradeAction @entity(immutable: true) {
   executionPrice: BigInt
   collateralTokenPriceMin: BigInt
   collateralTokenPriceMax: BigInt
+  indexTokenPriceMin: BigInt
+  indexTokenPriceMax: BigInt
   priceImpactDiffUsd: BigInt
+  priceImpactUsd: BigInt
   priceImpactAmount: BigInt
   positionFeeAmount: BigInt
   borrowingFeeAmount: BigInt
@@ -239,16 +252,41 @@ type TradeAction @entity(immutable: true) {
   transaction: Transaction!
 }
 
+type TokenPrice @entity {
+  # tokenAddress
+  id: ID!
+
+  minPrice: BigInt!
+  maxPrice: BigInt!
+}
+
 type ClaimCollateralAction @entity(immutable: true) {
   # transactionHash:account:eventName
   id: ID!
-  eventName: ClaimCollateralActionType!
+  eventName: ClaimActionType!
   account: String!
   marketAddresses: [String!]!
   tokenAddresses: [String!]!
   amounts: [BigInt!]!
 
   transaction: Transaction!
+}
+
+type ClaimAction @entity {
+  # transactionHash:account:eventName
+  id: ID!
+  eventName: ClaimActionType!
+  account: String!
+  marketAddresses: [String!]!
+  tokenAddresses: [String!]!
+  amounts: [BigInt!]!
+  isLongOrders: [Boolean!]!
+  transaction: Transaction!
+}
+
+type ClaimRef @entity {
+  # order.id
+  id: ID!
 }
 
 type PoolAmountUpdate @entity(immutable: true) {
@@ -258,6 +296,14 @@ type PoolAmountUpdate @entity(immutable: true) {
   delta: BigInt!
   nextValue: BigInt!
   transaction: Transaction!
+}
+
+type ClaimableFundingFeeInfo @entity(immutable: true) {
+  # transactionHash:account
+  id: ID!
+  marketAddresses: [String!]!
+  tokenAddresses: [String!]!
+  amounts: [BigInt!]!
 }
 
 type Transaction @entity {
@@ -276,6 +322,14 @@ type MarketInfo @entity {
   indexToken: String!
   longToken: String!
   shortToken: String!
+
+  marketTokensSupply: BigInt!
+}
+
+type DepositRef @entity {
+  id: ID!
+  marketAddress: String!
+  account: String!
 }
 
 type VolumeInfo @entity {
@@ -335,8 +389,6 @@ type SwapFeesInfoWithPeriod @entity {
   # timestamp | total
   id: ID!
   period: String!
-  totalFeeReceiverAmount: BigInt!
-  totalFeeAmountForPool: BigInt!
 
   totalFeeReceiverUsd: BigInt!
   totalFeeUsdForPool: BigInt!
@@ -352,4 +404,83 @@ type PositionFeesInfoWithPeriod @entity {
   totalPositionFeeAmount: BigInt!
   totalPositionFeeUsd: BigInt!
   totalBorrowingFeeUsd: BigInt!
+}
+
+type LiquidityProviderIncentivesStat @entity {
+  # used for liquidity providers incentives program
+  # tracks average weighted liquidity provided by user per week
+
+  # account:market:period:timestamp
+  id: ID!
+  period: String!
+  timestamp: Int!
+  account: String!
+  marketAddress: String!
+
+  updatedTimestamp: Int!
+  lastMarketTokensBalance: BigInt!
+  cumulativeTimeByMarketTokensBalance: BigInt!
+  weightedAverageMarketTokensBalance: BigInt!
+}
+
+type MarketIncentivesStat @entity {
+  # used for incentives program
+  # tracks average weighted liquidity in each pool
+
+  # marketAddress:period:timestamp
+  id: ID!
+  period: String!
+  timestamp: Int!
+  marketAddress: String!
+
+  updatedTimestamp: Int!
+  lastMarketTokensSupply: BigInt!
+  cumulativeTimeByMarketTokensSupply: BigInt!
+  weightedAverageMarketTokensSupply: BigInt!
+}
+
+type UserMarketInfo @entity {
+  # account:marketAddress
+  id: ID!
+
+  marketTokensBalance: BigInt!
+  account: String!
+  marketAddress: String!
+}
+
+type UserGlpGmMigrationStat @entity {
+  # account:period:timestamp
+  id: ID!
+  timestamp: Int!
+  period: String!
+  account: String!
+
+  glpRedemptionUsd: BigInt!
+  glpRedemptionFeeBpsByUsd: BigInt! # used to calculate average
+  glpRedemptionWeightedAverageFeeBps: Int!
+  gmDepositUsd: BigInt!
+}
+
+type Distribution @entity {
+  # receiver:txHash:typeId
+  id: ID!
+
+  receiver: String!
+  amounts: [BigInt!]!
+  amountsInUsd: [BigInt!]!
+  tokens: [String!]!
+
+  # 0 default
+  # 1 airdrop, affiliate. used in referrals subgraph
+  # 2 airdrop, traders. used in referrals subgraph
+  # 1000 v2, claim, affiliate. used in referrals subgraph
+
+  # 1001 v2, STIP GM incentives airdrop
+  # 1002 v2, STIP GLP -> GM migration rebates airdrop
+  # 1003 v2, STIP trading incentives airdrop
+  typeId: Int!
+
+  transactionHash: String!
+  blockNumber: Int!
+  timestamp: Int!
 }
