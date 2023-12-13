@@ -2,9 +2,9 @@
   "name": "gmx-arbitrum-prices",
   "license": "UNLICENSED",
   "scripts": {
-    "codegen": "graph codegen",
-    "build": "graph build",
-    "deploy": "graph deploy --product hosted-service baseswapfi/leverage-base-goerli-stats",
+    "codegen": "npx graph codegen",
+    "build": "npx graph build",
+    "deploy": "npx graph deploy baseswap-base-goerli-prices --version-label v0.0.1-new-version --node https://subgraphs.alchemy.com/api/subgraphs/deploy  --deploy-key --ipfs https://ipfs.satsuma.xyz",
     "deploy-prod": "graph deploy --product hosted-service gmx-io/gmx-arbitrum-prices",
     "deploy-test": "graph deploy --product hosted-service gdev8317/gmx-arbitrum-prices --deploy-key $(cat .access_token)",
     "deploy-satsuma": "graph deploy gmx-arbitrum-prices --version-label $(git rev-parse --abbrev-ref HEAD)-$(date '+%y%m%d%H%M%S')-$(git rev-parse --short HEAD) --node https://app.satsuma.xyz/api/subgraphs/deploy --ipfs https://ipfs.satsuma.xyz --deploy-key $(cat .satsuma_token)"
